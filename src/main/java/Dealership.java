@@ -4,7 +4,7 @@ import java.util.List;
 public class Dealership {
     private static final int BUILD_TIME = 2500;
     private static final int BUY_TIME = 1000;
-    private static final int CAR = 10;
+    private static final int CAR_COUNT = 10;
     List<Car> cars = new ArrayList<>();
     Dealer dealer;
 
@@ -12,13 +12,20 @@ public class Dealership {
         dealer = new Dealer(this);
     }
 
-    public synchronized void receiveCar() {
-        for (int i = 1; i <= CAR; i++) {
+    public void receiveCar() {
+        for (int i = 1; i <= CAR_COUNT; i++) {
+            synchronized (this) {
+                try {
+                    Thread.sleep(BUILD_TIME);
+                    cars.add(new Car());
+                    System.out.println(Thread.currentThread().getName() + " выпустил 1 авто");
+                    notify();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             try {
-                Thread.sleep(BUILD_TIME);
-                cars.add(new Car());
-                System.out.println(Thread.currentThread().getName() + " выпустил 1 авто");
-                notify();
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -28,7 +35,7 @@ public class Dealership {
     public synchronized void sellCar() {
         try {
             System.out.println(Thread.currentThread().getName() + " зашел в автосалон");
-            while (cars.size() == 0) {
+            if (cars.size() == 0) {
                 System.out.println("Машин нет!");
                 wait();
             }
