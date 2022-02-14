@@ -35,7 +35,7 @@ public class Dealership {
     public synchronized void sellCar() {
         try {
             System.out.println(Thread.currentThread().getName() + " зашел в автосалон");
-            if (cars.size() == 0) {
+            while (cars.size() == 0) {
                 System.out.println("Машин нет!");
                 wait();
             }
